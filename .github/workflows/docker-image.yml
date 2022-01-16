@@ -13,5 +13,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag deluged:$(date +%s)
+    - shell: bash
+      env:
+        HUB_PASSWORD: ${{ secrets.HUB_PASSWORD }}
+      run: |
+        ./check-build-push.sh
