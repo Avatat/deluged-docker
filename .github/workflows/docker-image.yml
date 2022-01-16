@@ -16,4 +16,4 @@ jobs:
       env:
         HUB_PASSWORD: ${{ secrets.HUB_PASSWORD }}
       run: |
-        check-build-push.sh
+        ./check-build-push.sh
