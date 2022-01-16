@@ -5,7 +5,7 @@ git \
 intltool \
 python3-pip
 
-RUN git clone -b develop git://deluge-torrent.org/deluge.git
+ADD deluge /deluge
 WORKDIR "/deluge"
 RUN pip install --user .
 
