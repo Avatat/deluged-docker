@@ -15,5 +15,6 @@ fi
 cd ..
 
 docker login -u avatat -p "$HUB_PASSWORD"
-docker build -t avatat/deluged:"$version" .
+docker build -t avatat/deluged:"$version" -t avatat/deluged:latest .
 docker push avatat/deluged:"$version"
+docker push avatat/deluged:latest
