@@ -18,6 +18,12 @@ python3-libtorrent \
 python3-setuptools \
 && rm -rf /var/lib/apt/lists/*
 
-COPY --from=build-image /root/.local /root/.local
-ENTRYPOINT ["/root/.local/bin/deluged", "--do-not-daemonize"]
+COPY --from=build-image /root/.local /var/lib/deluge/.local
+
+RUN groupadd --gid=999 --system deluge; \
+    useradd  --gid deluge --home-dir=/var/lib/deluge --shell=/bin/false --system --uid=999 deluge; \
+	chown -R deluge:deluge /var/lib/deluge
+USER deluge
+
+ENTRYPOINT ["/var/lib/deluge/.local/bin/deluged", "--do-not-daemonize"]
 CMD ["--loglevel", "info", "--config" ,"/config"]
