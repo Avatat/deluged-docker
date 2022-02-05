@@ -1,28 +1,29 @@
 FROM debian:11-slim as build-image
-RUN apt update && apt install -y \
-closure-compiler \
-git \
-intltool \
-python3-pip
 
 ADD deluge /deluge
 WORKDIR "/deluge"
-RUN pip install --user .
+
+RUN apt update && apt install -y --no-install-recommends \
+    closure-compiler \
+    git \
+    intltool \
+    python3-pip \
+    && pip install --upgrade pip \
+    && pip install --force-reinstall --no-cache-dir --user . chardet \
+    && find /root/.local -name __pycache__ -exec rm -rf {} + \
+    && chown -R 999:999 /root
 
 FROM debian:11-slim
-RUN apt update && apt install -y \
-python3-chardet \
-python3-dbus \
-python3-geoip \
-python3-libtorrent \
-python3-setuptools \
-&& rm -rf /var/lib/apt/lists/*
+
+RUN apt update && apt install -y --no-install-recommends \
+    ca-certificates \
+    python3-libtorrent \
+    && groupadd --gid=999 --system deluge \
+    && useradd  --create-home --gid deluge --home-dir=/var/lib/deluge --system --uid=999 deluge \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build-image /root/.local /var/lib/deluge/.local
 
-RUN groupadd --gid=999 --system deluge; \
-    useradd  --gid deluge --home-dir=/var/lib/deluge --shell=/bin/false --system --uid=999 deluge; \
-	chown -R deluge:deluge /var/lib/deluge
 USER deluge
 
 ENTRYPOINT ["/var/lib/deluge/.local/bin/deluged", "--do-not-daemonize"]
